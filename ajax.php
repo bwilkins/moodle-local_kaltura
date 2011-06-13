@@ -59,7 +59,7 @@ switch ($action) {
         }
 
         $url = kalturaPlayerUrlBase();
-        $returndata = array('url' => $url.$entry->kalturavideo, $params = array());
+        $returndata = array('url' => $url.$entry->kalturavideo, 'params' => array());
         break;
 
     case 'cwurl':
