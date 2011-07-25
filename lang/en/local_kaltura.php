@@ -1,6 +1,6 @@
 ﻿<?php
 
-$string['pluginname'] = 'Kaltura Video Extension';
+$string['pluginname'] = 'Kaltura Media Extension';
 $string['serveruri'] = 'Server URI';
 $string['serveruri-explanation'] = 'The address of your Kaltura Server';
 $string['pluginsettings'] = 'Player plugin settings';
@@ -19,4 +19,29 @@ $string['secret'] = 'Secret';
 $string['secretdesc'] = 'Secret as was recieved in your email registration confirmation. Do NOT change this value';
 $string['adminsecret'] = 'Admin Secret';
 $string['adminsecretdesc'] = 'Admin secret as was recieved in your email registration confirmation. Do NOT change this value';
+$string['close'] = 'Close';
+$string['thumbnail'] = 'Thumbnail';
+$string['editinfo'] = 'Edit Information';
+$string['title'] = 'Title: ';
+$string['description'] = 'Description: ';
+$string['tags'] = 'Tags: ';
+$string['categories'] = 'Categories: ';
+$string['update'] = 'Update';
+$string['upload'] = 'Upload';
+$string['uploadvideo'] = 'Upload Video';
+$string['uploadaudio'] = 'Upload Audio';
+$string['video'] = 'Video';
+$string['audio'] = 'Audio';
+$string['uploadfromfile'] = 'Upload From Files';
+$string['recordfrommicrophone'] = 'Record From Microphone';
+$string['recordfromwebcam'] = 'Record From Webcam';
+$string['myaudio'] = 'My Audio';
+$string['myvideo'] = 'My Video';
+$string['sharedaudio'] = 'Shared Audio';
+$string['sharedvideo'] = 'Shared Video';
+$string['extratext'] = '';
+$string['kuploadvideo'] = '';
+$string['kuploadaudio'] = '';
+$string['identifier'] = 'Identifier Attribute';
+$string['identifier-explanation'] = 'Which user attribute to use to identify the user to Kaltura';
 ?>

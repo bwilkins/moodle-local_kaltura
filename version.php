@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/licenses/agpl.html GNU Affero GPL v3 or later
  */
 
-$plugin->version  = 2011051300;
+$plugin->version  = 2011071800;
 $plugin->requires = 2011022100;  // Requires Moodle 2
 $plugin->cron     = 0;
 

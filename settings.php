@@ -47,22 +47,19 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
 
     $settings->add(new admin_setting_heading('pluginsettings', get_string('pluginsettings', 'local_kaltura') , ''));
 
-    $settings->add(new admin_setting_configtext('local_kaltura/uploader_regular',
-        get_string('uploaderregular', 'local_kaltura'), null, '1002217', PARAM_TEXT, 8));
-
     $settings->add(new admin_setting_configtext('local_kaltura/player_regular_dark',
         get_string('playerregulardark', 'local_kaltura'), null, '1466342', PARAM_TEXT, 8));
 
     $settings->add(new admin_setting_configtext('local_kaltura/player_regular_light',
         get_string('playerregularlight', 'local_kaltura'), null, '1466432', PARAM_TEXT, 8));
 
-    $settings->add(new admin_setting_configtext('local_kaltura/player_mix_dark',
-        get_string('playermixdark', 'local_kaltura'), null, '1466482', PARAM_TEXT, 8));
+    $settings->add(new admin_setting_configtext('local_kaltura/kupload_video',
+        get_string('kuploadvideo', 'local_kaltura'), null, '4436601', PARAM_TEXT, 8));
 
-    $settings->add(new admin_setting_configtext('local_kaltura/player_mix_light',
-        get_string('playermixlight', 'local_kaltura'), null, '1496582', PARAM_TEXT, 8));
+    $settings->add(new admin_setting_configtext('local_kaltura/kupload_audio',
+        get_string('kuploadaudio', 'local_kaltura'), null, '4971641', PARAM_TEXT, 8));
 
-    $settings->add(new admin_setting_configtext('local_kaltura/video_presentation',
-        get_string('videopresentation', 'local_kaltura'), null, '1003069', PARAM_TEXT, 8));
-
+    $settings->add(new admin_setting_configselect('local_kaltura/identifier',
+        get_string('identifier', 'local_kaltura'), get_string('identifier-explanation', 'local_kaltura'),
+            'username', array('username'=>'username', 'email'=>'email', 'id'=>'id', 'idnumber'=>'idnumber')));
 }

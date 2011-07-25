@@ -27,21 +27,20 @@ function initialisevideo(obj) {
         if (player == undefined) {
             return false;
         }
-        player.setStyles({width:400,height:290});
         if (player.hasChildNodes()) {
             player.one('*').remove(true);
         }
 
         var datastr = '';
-        datastr += 'action=playerurl';
+        datastr += 'actions[0]=playerurl';
         if (obj.entryid != undefined && obj.entryid != '') {
-            datastr += '&entryid='+obj.entryid;
+            datastr += '&params[0][entryid]='+obj.entryid;
         }
         else if (window.kaltura.entryid != 0 && window.kaltura.entryid != undefined) {
-            datastr += '&entryid='+window.kaltura.entryid;
+            datastr += '&params[0][entryid]='+window.kaltura.entryid;
         }
         else if (window.kaltura.cmid != 0 && window.kaltura.cmid != undefined) {
-            datastr += '&id='+window.kaltura.cmid;
+            datastr += '&params[0][id]='+window.kaltura.cmid;
         }
         else {
             return false;
@@ -53,7 +52,7 @@ function initialisevideo(obj) {
                 on: {
                     complete: function(i, o, a) {
                         var data = Y.JSON.parse(o.responseText);
-                        var kaltura_player = new Y.SWF(obj.playerselector, data.url,
+                        var kaltura_player = new Y.SWF(obj.playerselector, data[0].url,
                             {
                                 fixedAttributes: {
                                     wmode: "opaque",
