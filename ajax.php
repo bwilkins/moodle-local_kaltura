@@ -27,7 +27,6 @@ require('../../config.php');
 require_once("lib.php");
 require_once($CFG->dirroot.'/local/kaltura/client/KalturaClient.php');
 require_once($CFG->dirroot.'/local/kaltura/interface_strings.php');
-require_once($CFG->dirroot.'/local/kaltura/tmp_interface.php');
 
 $actions       = optional_param('actions', '', PARAM_CLEAN);
 $params        = optional_param('params', null, PARAM_CLEAN);
