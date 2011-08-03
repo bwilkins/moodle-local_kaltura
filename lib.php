@@ -65,6 +65,9 @@ function kalturaCWSession_setup($admin=false) {
 }
 
 function kalturaGlobals_js($config) {
+    $strs = new stdClass;
+    $strs->loading = get_string('loading', 'local_kaltura');
+    $strs->connectionissue = get_string('connectionissue', 'local_kaltura');
     if(empty($config) || !is_array($config)) {
         return false;
     }
@@ -74,6 +77,11 @@ function kalturaGlobals_js($config) {
             }'."\n";
     foreach ($config as $key => $value) {
         $ret .= "window.kaltura.$key = '$value';\n";
+    }
+    $ret .= "window.kaltura.strs = {};\n";
+    foreach ($strs as $key => $value) {
+        $value = htmlentities($value);
+       $ret .= "window.kaltura.strs.$key = '$value';\n";
     }
     $ret .= '</script>';
     return $ret;

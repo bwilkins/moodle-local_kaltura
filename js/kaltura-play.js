@@ -65,6 +65,7 @@ function initialisevideo(obj) {
                                 }
                             }
                         );
+                        Y.one(document.body).append('<scr' + 'ipt type="text/javascript" src="' + data[0].html5url + '"></scr' + 'ipt>');
                     }
                 }
             }

@@ -48,6 +48,8 @@ function handleAction($action, $params=array()) {
     global $USER, $CFG, $DB;
     switch ($action) {
         case 'playerurl':
+            $partnerId  = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'partner_id'));
+            $serviceUrl = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'server_uri'));
             $entry = null;
             if (!empty($params['id'])) {
                 $cm = get_coursemodule_from_id('kalturavideo', $params['id'], 0, false, MUST_EXIST);
@@ -59,7 +61,11 @@ function handleAction($action, $params=array()) {
             }
 
             $url = kalturaPlayerUrlBase();
-            return array('url' => $url.$entry->kalturavideo, 'params' => array());
+
+            $ui_conf_id = 5209112;
+            $scriptUrl = $serviceUrl . '/p/' . $partnerId . '/sp/' . $partnerId * 100 . '/embedIframeJs/ui_conf_id/' . $ui_conf_id . '/partner_id/' . $partnerId;
+
+            return array('url' => $url . $entry->kalturavideo, 'html5url' =>$scriptUrl, 'params' => array());
             break;
 
         case 'cwurl':
@@ -70,40 +76,18 @@ function handleAction($action, $params=array()) {
             $client = kalturaClientSession();
             $config = $client->getConfig();
             $base   = $CFG->wwwroot.'/local/kaltura/objects/';
+            $host   = str_replace(array('http://', 'https://'), '', $config->serviceUrl);
 
-            return array('url' => $base.'audio.swf', 'base' => $base, 'params' => array('ks' => $client->getKs(), 'host' => $config->serviceUrl, 'uid' => $USER->id, 'pid' => $config->partnerId, 'subpid' => $config->partnerId*100, 'kshowId' => -1, 'autopreview' => true, 'themeUrl' => $CFG->wwwroot.'/local/kaltura/objects/skin.swf', 'entryName' => 'New Entry', 'entryTags' => 'audio', 'thumbOffset' => 1, 'useCamera' => 'false'));
+            return array('url' => $base.'audio.swf', 'base' => $base, 'params' => array('ks' => $client->getKs(), 'host' => $host, 'uid' => $USER->id, 'pid' => $config->partnerId, 'subpid' => $config->partnerId*100, 'kshowId' => -1, 'autopreview' => true, 'themeUrl' => $CFG->wwwroot.'/local/kaltura/objects/skin.swf', 'entryName' => 'New Entry', 'entryTags' => 'audio', 'thumbOffset' => 1, 'useCamera' => 'false'));
             break;
 
         case 'videourl':
             $client = kalturaClientSession();
             $config = $client->getConfig();
             $base   = $CFG->wwwroot.'/local/kaltura/objects/';
+            $host   = str_replace(array('http://', 'https://'), '', $config->serviceUrl);
 
-            return array('url' => $base.'video.swf', 'base' => $base, 'params' => array('ks' => $client->getKs(), 'host' => $config->serviceUrl, 'uid' => $USER->id, 'pid' => $config->partnerId, 'subpid' => $config->partnerId*100, 'kshowId' => -1, 'autopreview' => true, 'themeUrl' => $CFG->wwwroot.'/local/kaltura/objects/skin.swf', 'entryName' => 'New Entry', 'entryTags' => 'audio', 'thumbOffset' => 1));
-            break;
-
-        case 'search':
-            list($client, $filter, $pager) = buildListFilter();
-
-            $filter->searchTextMatchOr($search_term);
-
-            $results = $client->media->listAction($filter, $pager);
-            $count   = $client->media->count($filter);
-            $pagecount = ceil($count/$pager->pageSize);
-
-            if ($pager->pageIndex > $pagecount) {
-                return array();
-                break;
-            }
-
-            return array(
-                'page' => array(
-                    'count' => $pagecount,
-                    'current' => $pager->pageIndex,
-                ),
-                'count' => $count,
-                'objects' => $results->objects,
-            );
+            return array('url' => $base.'video.swf', 'base' => $base, 'params' => array('ks' => $client->getKs(), 'host' => $host, 'uid' => $USER->id, 'pid' => $config->partnerId, 'subpid' => $config->partnerId*100, 'kshowId' => -1, 'autopreview' => true, 'themeUrl' => $CFG->wwwroot.'/local/kaltura/objects/skin.swf', 'entryName' => 'New Entry', 'entryTags' => 'audio', 'thumbOffset' => 1));
             break;
 
         case 'listpublic':
@@ -170,13 +154,6 @@ function handleAction($action, $params=array()) {
             return construct_interface($select, $edit);
             break;
 
-        case 'getdomnodes_tmp':
-            $select = new stdClass;
-            $edit   = new stdClass;
-
-            return construct_interface_tmp($select, $edit);
-            break;
-
         case 'videouploadurl':
             $identifier = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'identifier'));
             $ui_conf_id = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'kupload_video'));
@@ -225,7 +202,9 @@ function handleAction($action, $params=array()) {
             $entry->name           = $entrydata->title;
             $entry->description    = $entrydata->description;
             $entry->tags           = $entrydata->tags;
-            $entry->categoriesIds  = $entrydata->categories;
+            if ($entrydata->categories) {
+                $entry->categoriesIds = $entrydata->categories;
+            }
 
             if ($entrydata->mediatype == 'video') {
                 $entry->mediaType = KalturaMediaType::VIDEO;
@@ -250,7 +229,9 @@ function handleAction($action, $params=array()) {
             $entry->name          = $entrydata->title;
             $entry->description   = $entrydata->description;
             $entry->tags          = $entrydata->tags;
-            $entry->categoriesIds = $entrydata->categories;
+            if ($entrydata->categories) {
+                $entry->categoriesIds = $entrydata->categories;
+            }
 
             if (empty($entry->description)) {
                 return array(
@@ -273,7 +254,7 @@ function handleAction($action, $params=array()) {
 }
 
 function buildListFilter($params) {
-    $client = kalturaClientSession();
+    $client = kalturaClientSession(true);
     $config = $client->getConfig();
 
     $pager = new KalturaFilterPager();

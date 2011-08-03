@@ -24,7 +24,7 @@
 /* Root node */
 #overlayContainer {
     background: white;
-    width : 635px;
+    width : 653px;
     min-height: 448px;
     height : auto;
     margin-left:125px;
@@ -42,6 +42,10 @@
 }
 #contribClose:hover {
     cursor:pointer;
+}
+#kalConnectionIssue {
+    position:absolute;
+    top:50%;
 }
 /* Edit interface */
 #editprogressdiv {
@@ -70,12 +74,15 @@
     display: block;
     float : none;
     width : auto;
+    clear:both;
+    padding-top:5px;
 }
 #contribkalturathumb {
     height: 117px;
     width : 157px;
     border: none;
     margin-left:157px;
+    float:left;
 }
 .loadingicon {
     height: 55px;
@@ -93,13 +100,13 @@
 }
 .editentry input,
 .editentry > span {
-    width : 290px;
+    width : 430px;
     display: inline-block;
 }
 #editcategoriestreeview {
     overflow: auto;
     height : 120px;
-    width:300px;
+    width:440px;
     border:1px solid darkgrey;
     margin-top:8px;
     background:white;
@@ -116,12 +123,12 @@ span.fullName {
     border-top:none;
     padding-top:4px;
     padding-right:4px;
-    width:629px;
+    width:653px;
     background:#FFF;
     padding-bottom:4px;
 }
 #selectionInterface .yui3-tabview-panel.contentArea {
-    margin-left:125px;
+    margin-left:150px;
     padding:10px;
     width:auto;
     height:auto;
@@ -169,7 +176,17 @@ span.fullName {
     padding:0 4px;
 }
 #kalturahtmlcontrib {
+    width:659px !important;
 }
+
+#kalturahtmlcontrib .help {
+    display:block;
+    width:270px;
+    height:117px;
+    float:right;
+    margin-right:35px;
+}
+
 #editInterface #edit-content {
     width: auto;
     height: auto !important;
@@ -234,8 +251,8 @@ span.fullName {
     width: 0px;
     height: 0px;
 }
-.hidden,
-.hidden * {
+.kalhidden,
+.kalhidden * {
     display: none;
     width : 0px;
     height : 0px;
@@ -283,7 +300,7 @@ span.fullName {
 #selectionInterface #videotabview ul.yui3-tabview-list,
 #selectionInterface #audiotabview ul.yui3-tabview-list {
     float:left;
-    width:125px;
+    width:150px;
     height:100%;
     padding-left:0;
     background:none;
@@ -295,7 +312,7 @@ span.fullName {
     margin:0 0 2px 4px;
     line-height:25px;
     height:auto;
-    width:121px;
+    width:146px;
     text-align:left;
 }
 #selectionInterface #videotabview ul.yui3-tabview-list li.yui3-tab-selected,
@@ -316,3 +333,7 @@ span.fullName {
     height:290px;
     background-color: #eee;
 }
+
+
+/* Hidden things */
+#editcategoriesids, #editentryid {display:none;}
