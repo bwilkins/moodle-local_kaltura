@@ -1,8 +1,9 @@
 <?php
 /**
- * Kaltura Local Plugin for Moodle 2
+ * Kaltura Video Resource for Moodle 2
+ * Copyright (C) 2009 Petr Skoda  (http://skodak.org)
  * Copyright (C) 2011 Catalyst IT (http://www.catalyst.net.nz)
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -22,8 +23,31 @@
  * @license    http://www.gnu.org/licenses/agpl.html GNU Affero GPL v3 or later
  */
 
-$plugin->version  = 2011080900;
-$plugin->requires = 2011022100;  // Requires Moodle 2
-$plugin->cron     = 0;
+defined('MOODLE_INTERNAL') || die;
 
-?>
+$capabilities = array(
+    'local/kaltura:view' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'guest' => CAP_ALLOW,
+            'user' => CAP_ALLOW,
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        )
+    ),
+    'local/kaltura:viewshared' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => array(
+            'guest' => CAP_PREVENT,
+            'user' => CAP_PREVENT,
+            'student' => CAP_PREVENT,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        )
+    ),
+);

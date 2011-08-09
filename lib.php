@@ -65,9 +65,9 @@ function kalturaCWSession_setup($admin=false) {
 }
 
 function kalturaGlobals_js($config) {
-    $strs = new stdClass;
-    $strs->loading = get_string('loading', 'local_kaltura');
-    $strs->connectionissue = get_string('connectionissue', 'local_kaltura');
+    $strs = array();
+    $strs['loading'] = get_string('loading', 'local_kaltura');
+    $strs['connectionissue'] = get_string('connectionissue', 'local_kaltura');
     if(empty($config) || !is_array($config)) {
         return false;
     }

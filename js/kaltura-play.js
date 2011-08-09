@@ -50,7 +50,7 @@ function initialisevideo(obj) {
             {
                 data: datastr,
                 on: {
-                    complete: function(i, o, a) {
+                    success: function(i, o, a) {
                         var data = Y.JSON.parse(o.responseText);
                         var kaltura_player = new Y.SWF(obj.playerselector, data[0].url,
                             {

@@ -44,7 +44,6 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configpasswordunmask('local_kaltura/admin_secret',
         get_string('adminsecret', 'local_kaltura'), null, null, PARAM_TEXT, 8));
 
-
     $settings->add(new admin_setting_heading('pluginsettings', get_string('pluginsettings', 'local_kaltura') , ''));
 
     $settings->add(new admin_setting_configtext('local_kaltura/player_regular_dark',
@@ -58,6 +57,9 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
 
     $settings->add(new admin_setting_configtext('local_kaltura/kupload_audio',
         get_string('kuploadaudio', 'local_kaltura'), null, '4971641', PARAM_TEXT, 8));
+
+    $settings->add(new admin_setting_configtext('local_kaltura/student_upload_category',
+        get_string('studentcategory', 'local_kaltura'), get_string('studentcategory-explain', 'local_kaltura'), '', PARAM_TEXT));
 
     $settings->add(new admin_setting_configselect('local_kaltura/identifier',
         get_string('identifier', 'local_kaltura'), get_string('identifier-explanation', 'local_kaltura'),
