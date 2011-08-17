@@ -62,7 +62,7 @@ function addEntryComplete(entry) {
         navigator = window.navigator,
         location  = window.location;
 
-    YUI().use('node', 'io', 'event', 'json', 'overlay', 'tabview', 'swf', 'yui2-treeview', 'yui2-progressbar', function (Y) {
+    YUI().use('node', 'io', 'event', 'json', 'overlay', 'tabview', 'swf', 'yui2-treeview', 'yui2-progressbar', 'dd-plugin', function (Y) {
         var contribWiz = (function () {
             /* Define a few things... */
 
@@ -170,6 +170,9 @@ function addEntryComplete(entry) {
                             centered: true
                         });
                         $this.renderables.overlay.render();
+                        $this.renderables.overlay.plug(Y.Plugin.Drag);
+                        $this.renderables.overlay.dd.addHandle('.yui3-tabview-list');
+
 
                         Y.one(document.body).removeClass('yui3-skin-sam');
                         Y.one('#contribClose').on('click', function (e) {
@@ -293,13 +296,6 @@ function addEntryComplete(entry) {
                     });
 
                     var pages = Array();
-                    if ($this.interfaceNodes.selectdata['show'].audiolistprivate) {
-                        pages.push({
-                            target: '#myaudio',
-                            type  : 'audio',
-                            access: 'private'
-                        });
-                    }
                     if ($this.interfaceNodes.selectdata['show'].videolistprivate) {
                         pages.push({
                             target: '#myvideo',
@@ -307,19 +303,12 @@ function addEntryComplete(entry) {
                             access: 'private'
                         });
                     }
-                    if ($this.interfaceNodes.selectdata['show'].audiolistpublic) {
+                    if ($this.interfaceNodes.selectdata['show'].videolistpublic) {
                         pages.push({
-                            target: '#sharedaudio',
-                            type  : 'audio',
+                            target: '#sharedvideo',
+                            type  : 'video',
                             access: 'public'
                         });
-                    }
-                    if ($this.interfaceNodes.selectdata['show'].videolistpublic) {
-                            pages.push({
-                                target: '#sharedvideo',
-                                type  : 'video',
-                                access: 'public'
-                            });
                     }
                     for (var i = 0; i < pages.length; i++) {
                         var ob = pages[i];
@@ -332,12 +321,20 @@ function addEntryComplete(entry) {
                                 pagecount = 1;
                         }
 
+                        if (ob.type == 'video') {
+                            var callback = $this.videoMediaCallback;
+                        }
+                        if (ob.type == 'audio') {
+                            var callback = function(){};
+                        }
+
                         $this.pageButtonHandlers({
-                            action   : 'list' + ob.access,
+                            action   : ob.type + 'list' + ob.access,
                             target   : ob.target,
                             type     : ob.type,
                             page     : page,
-                            pagecount: pagecount
+                            pagecount: pagecount,
+                            callback : callback
                         });
                     }
 
@@ -409,7 +406,8 @@ function addEntryComplete(entry) {
                                     entryid: $this.entryid,
                                     upload : $this.upload
                                 },
-                                successCallback: $this._populateEditCallback
+                                successCallback: $this._populateEditCallback,
+                                failureCallback: $this._retryGetEditData
                             }
                         ]);
                     }
@@ -559,7 +557,30 @@ function addEntryComplete(entry) {
 
                     Y.one('#editupdate').set('disabled', false);
                 },
-                _mediaListCallback: function (ob) {
+                _retryGetEditData: function (ob) {
+                    var passthrough = ob.passthrough;,
+                        $this       = window.kalturaWiz;
+
+                    if ($this._retryGetEditData.retryCount
+                            && $this._retryGetEditData.retryCount > 10) {
+                        //Display Error
+                        return false;
+                    }
+                    else if ($this._retryGetEditData.retryCount) {
+                        $this._retryGetEditData.retryCount++;
+                    }
+                    else {
+                        $this._retryGetEditData.retryCount = 1;
+                    }
+
+                    $this.multiJAX([{
+                        passthrough: passthrough,
+                        params: passthrough,
+                        successCallback: $this._populateEditCallback,
+                        failureCallback: $this.retryGetEditData
+                    }]);
+                },
+                videoMediaCallback: function (ob) {
                     var $this      = window.kalturaWiz,
                         strs       = $this.interfaceNodes.strings,
                         page       = ob.response.page,
@@ -604,8 +625,31 @@ function addEntryComplete(entry) {
                         target   : ob.passthrough.target,
                         type     : ob.passthrough.type,
                         page     : ob.response.page.current,
-                        pagecount: ob.response.page.count
+                        pagecount: ob.response.page.count,
+                        callback : videoMediaCallback
                     });
+                },
+                audioMediaCallback: function (ob) {
+                    var $this      = window.kalturaWiz,
+                        strs       = $this.interfaceNodes.strings;
+
+                    if (ob.response) {
+                        Y.one(ob.passthrough.target+' .'+ob.passthrough.type+'container').setContent(
+                              '<table>'
+                            + '<tr><th>' + strs.audioname + '</th></tr>'
+                        );
+                    }
+
+                    for (var i = 0; i < ob.response.count; i++) {
+                        var n = ob.response.objects[i];
+                        if (n) {
+                            Y.one(ob.passthrough.target + ' .' + ob.passthrough.type + 'container').append(
+                                '<tr><td>' + n.name + '</td><td>' + n.size + '</td></tr>'
+                            );
+                        }
+                    }
+
+                    Y.one(ob.passthrough.target + ' .' + ob.passthrough.type + 'container').append('</table>');
                 },
                 pageButtonHandlers: function (ob) {
                     var $this   = this,
@@ -634,7 +678,7 @@ function addEntryComplete(entry) {
                                             mediatype: ob.type,
                                             page: ob.page-1
                                         },
-                                        successCallback: window.kalturaWiz._mediaListCallback
+                                        successCallback: ob.callback
                                     }]);
 
                                     return false;
@@ -716,12 +760,22 @@ function addEntryComplete(entry) {
                                     }
                                 },
                                 failure: function (i, o, a) {
-                                    response = Y.JSON.parse(o.responseText);
-                                    for (var j = 0; j < response.length; j++) {
-                                        callbacks[j].failure({
-                                            response: response[j],
-                                            passthrough: passthroughs[j]
-                                        });
+                                    try {
+                                        response = Y.JSON.parse(o.responseText);
+                                        for (var j = 0; j < response.length; j++) {
+                                            callbacks[j].failure({
+                                                response: response[j],
+                                                passthrough: passthroughs[j]
+                                            });
+                                        }
+                                    }
+                                    catch (ex) {
+                                        for (var j = 0; j < response.length; j++) {
+                                            callbacks[j].failure({
+                                                passthrough: passthroughs[j]
+                                            });
+                                        }
+
                                     }
                                 }
                             }
@@ -747,7 +801,13 @@ function addEntryComplete(entry) {
                 },
                 selectedEntry: function (ob) {
                     var $this = window.kalturaWiz;
-                    $this.entryid = ob.entryId;
+                    if (ob.entryId) {
+                        $this.entryid = ob.entryId;
+                    }
+                    else {
+                        /* assume ob.id exists if ob.entryId does not */
+                        $this.entryid = ob.id;
+                    }
                     $this.mediatype = ob.mediatype;
                     $this.upload  = ob.upload;
 

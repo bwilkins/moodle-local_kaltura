@@ -163,6 +163,27 @@ span.fullName {
     padding-bottom: 4px;
     padding-left: 7px;
 }
+.audiocontainer {
+    width: 482px;
+    height: 380px;
+    overflow: auto;
+}
+.audiocontainer table {
+    width: 100%;
+    height: 100%;
+}
+.audiocontainer table .odd {
+    background-color: white;
+}
+.audiocontainer thead th.left {
+    text-align: left;
+}
+.audiocontainer .right {
+    text-align: right;
+}
+.audiocontainer tbody tr :hover {
+    cursor: pointer;
+}
 #editInterface {
     margin-left:0;
 }

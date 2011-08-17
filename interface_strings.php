@@ -34,7 +34,7 @@ function construct_interface($select, $edit, $enable_shared) {
     return $interfaceNodes;
 }
 
-function constructMediaPager($mediatype, $data) {
+function constructVideoMediaPager($data) {
     $next = get_string('next', 'local_kaltura');
     $previous = get_string('previous', 'local_kaltura');
     $page = get_string('page', 'local_kaltura');
@@ -47,21 +47,15 @@ function constructMediaPager($mediatype, $data) {
     if ($data['page']['current'] == 1) {
         $pagebhref = '';
     }
-    $listhtml = '<div class="' . $mediatype . 'container">';
+    $listhtml = '<div class="videocontainer">';
     $controlshtml =  '<div class="controls">'
                     .'<a ' . $pagebhref . ' class="pageb">' . $previous . '</a> ' . $page . ' ' . $data['page']['current'] . ' of ' . $data['page']['count'] . ' <a ' . $pagefhref . ' class="pagef">' . $next . '</a>'
                     .'</div>';
 
     foreach ($data['objects'] as $entry) {
-        if ($mediatype == 'audio') {
-            $thumbhtml = '<span><div class="kalthumb">' . $entry->name . '</div></span>';
-        }
-        else { //Assume video
-            $thumbhtml = '<img src="' . $entry->thumbnailUrl . '" type="image/jpeg" class="kalthumb" alt="' . $entry->name . '" title="' . $entry->name . '"/>';
-        }
-
+        $thumbhtml = '<img src="' . $entry->thumbnailUrl . '" type="image/jpeg" class="kalthumb" alt="' . $entry->name . '" title="' . $entry->name . '"/>';
         $listhtml .= '<span class="thumb">'
-                        .'<a href="#" onclick="window.kalturaWiz.selectedEntry({entryId: \'' . $entry->id . '\', mediatype: \'' . $mediatype . '\', upload: false});return false;" class="kalturavideo" id="' . $entry->id . '">'
+                        .'<a href="#" onclick="window.kalturaWiz.selectedEntry({entryId: \'' . $entry->id . '\', mediatype: \'video\', upload: false});return false;" class="kalturavideo" id="' . $entry->id . '">'
                             .$thumbhtml
                         .'</a>'
                     .'</span>';
@@ -70,6 +64,47 @@ function constructMediaPager($mediatype, $data) {
     $listhtml .= '</div>';
 
     return $controlshtml . $listhtml;
+}
+
+function constructAudioMediaPager($data) {
+    $flipper = false;
+    $strs = new stdClass;
+    $strs->entry = get_string('entry', 'local_kaltura');
+    $strs->duration = get_string('duration', 'local_kaltura');
+
+    $listhtml  = '<div class="audiocontainer">';
+    $listhtml .= '<table class="audiotable">';
+    $listhtml .= '<thead>';
+    $listhtml .= '<tr><th class="left" align="left">' . $strs->entry . '</th><th class="right">' . $strs->duration . '</th></tr>';
+    $listhtml .= '</thead>';
+    $listhtml .= '<tbody>';
+    foreach ($data['objects'] as $entry) {
+        $class = '';
+        if ($flipper) {
+            $class = 'even';
+        }
+        else {
+            $class = 'odd';
+        }
+        $flipper = !$flipper;
+
+        $duration = sprintf('%d:%02d',floor($entry->duration/60), $entry->duration%60);
+
+        $listhtml .= '<tr onclick="window.kalturaWiz.selectedEntry({entryId: \'' . $entry->id . '\', mediatype: \'audio\', upload: false});" class="' . $class . '">'
+                . '<td class="left" align="left">'
+                    . $entry->name
+                . '</td>'
+                . '<td class="right" align="right">'
+                    . $duration
+                . '</td>'
+            . '</tr>'
+        .'</a>';
+    }
+    $listhtml .= '</tbody>';
+    $listhtml .= '</table>';
+    $listhtml .= '</div>';
+
+    return $listhtml;
 }
 
 function editInterface($edit) {
@@ -185,6 +220,10 @@ function selectInterface($select, $enable_shared) {
     $show->audiolistpublic  = $enable_shared && !empty($select->audiolistpublic);
 
     $strs = new stdClass;
+
+    $strs->entry = get_string('entry', 'local_kaltura');
+    $strs->duration = get_string('duration', 'local_kaltura');
+
     $strs->upload = get_string('upload', 'local_kaltura');
     $strs->uploadfromfile = get_string('uploadfromfile', 'local_kaltura');
 
@@ -215,7 +254,7 @@ function selectInterface($select, $enable_shared) {
 
             $dom->videolistprivateli = '<li><a href="#myvideo">' . $strs->myvideo . '</a></li>';
             $dom->videolistprivate  = '<div id="myvideo" class="contentArea">';
-            $dom->videolistprivate .= constructMediaPager('video', $select->videolistprivate);
+            $dom->videolistprivate .= constructVideoMediaPager($select->videolistprivate);
             $dom->videolistprivate .= '<div class="help">' . $strs->myvideohelp . '</div>';
             $dom->videolistprivate .= '</div>';
         }
@@ -231,7 +270,7 @@ function selectInterface($select, $enable_shared) {
 
             $dom->videolistpublicli .= '<li><a href="#sharedvideo">' . $strs->sharedvideo . '</a></li>';
             $dom->videolistpublic  = '<div id="sharedvideo" class="contentArea">';
-            $dom->videolistpublic .= constructMediaPager('video', $select->videolistpublic);
+            $dom->videolistpublic .= constructVideoMediaPager($select->videolistpublic);
             $dom->videolistpublic .= '<div class="help">' . $strs->sharedvideohelp . '</div>';
             $dom->videolistpublic .= '</div>';
         }
@@ -291,7 +330,7 @@ VIDEO;
 
             $dom->audiolistprivateli = '<li><a href="#myaudio">' . $strs->myaudio . '</a></li>';
             $dom->audiolistprivate   = '<div id="myaudio" class="contentArea">';
-            $dom->audiolistprivate  .= constructMediaPager('audio', $select->audiolistprivate);
+            $dom->audiolistprivate  .= constructAudioMediaPager($select->audiolistprivate);
             $dom->audiolistprivate  .= '<div class="help">' . $strs->myaudiohelp . '</div>';
             $dom->audiolistprivate  .= '</div>';
         }
@@ -306,7 +345,7 @@ VIDEO;
 
             $dom->audiolistpublicli .= '<li><a href="#sharedaudio">' . $strs->sharedaudio . '</a></li>';
             $dom->audiolistpublic    = '<div id="sharedaudio" class="contentArea">';
-            $dom->audiolistpublic   .= constructMediaPager('audio', $select->audiolistpublic);
+            $dom->audiolistpublic   .= constructAudioMediaPager($select->audiolistpublic);
             $dom->audiolistpublic   .= '<div class="help">' . $strs->sharedaudiohelp . '</div>';
             $dom->audiolistpublic   .= '</div>';
         }
