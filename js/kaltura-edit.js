@@ -527,7 +527,14 @@ function addEntryComplete(entry) {
                     this._swfLoadCallback(ob);
                 },
                 _populateEditCallback: function (ob) {
-                    Y.one('#editentryid').set('value', ob.response.entry.id);
+                    try {
+                        var id = ob.response.entry.id;
+                    }
+                    catch (ex) {
+                        var id = ob.response.entry.entryId;
+                    }
+
+                    Y.one('#editentryid').set('value', id);
                     var title = ob.response.entry.name.replace('New Entry', '');
                     Y.one('#edittitle').set('value', title);
                     Y.one('#editdescription').set('value', ob.response.entry.description);
@@ -558,7 +565,7 @@ function addEntryComplete(entry) {
                     Y.one('#editupdate').set('disabled', false);
                 },
                 _retryGetEditData: function (ob) {
-                    var passthrough = ob.passthrough;,
+                    var passthrough = ob.passthrough,
                         $this       = window.kalturaWiz;
 
                     if ($this._retryGetEditData.retryCount
@@ -574,6 +581,7 @@ function addEntryComplete(entry) {
                     }
 
                     $this.multiJAX([{
+                        action: 'geteditdata',
                         passthrough: passthrough,
                         params: passthrough,
                         successCallback: $this._populateEditCallback,
@@ -762,7 +770,7 @@ function addEntryComplete(entry) {
                                 failure: function (i, o, a) {
                                     try {
                                         response = Y.JSON.parse(o.responseText);
-                                        for (var j = 0; j < response.length; j++) {
+                                        for (var j = 0; j < callbacks.length; j++) {
                                             callbacks[j].failure({
                                                 response: response[j],
                                                 passthrough: passthroughs[j]
@@ -770,7 +778,7 @@ function addEntryComplete(entry) {
                                         }
                                     }
                                     catch (ex) {
-                                        for (var j = 0; j < response.length; j++) {
+                                        for (var j = 0; j < callbacks.length; j++) {
                                             callbacks[j].failure({
                                                 passthrough: passthroughs[j]
                                             });
