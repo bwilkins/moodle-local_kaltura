@@ -111,6 +111,84 @@
     margin-top:8px;
     background:white;
 }
+#editcategoriestext_pretty {
+    width: 440px;
+    font-size: 13px;
+    position: relative;
+    display: inline-block;
+    zoom: 1;
+    *display: inline;
+}
+
+/*########################################*/
+.pretty_container .pretty-choices {
+  background-color: #fff;
+  background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0.85, white), color-stop(0.99, #eeeeee));
+  background-image: -webkit-linear-gradient(center bottom, white 85%, #eeeeee 99%);
+  background-image: -moz-linear-gradient(center bottom, white 85%, #eeeeee 99%);
+  background-image: -o-linear-gradient(bottom, white 85%, #eeeeee 99%);
+  background-image: -ms-linear-gradient(top, #ffffff 85%,#eeeeee 99%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ffffff', endColorstr='#eeeeee',GradientType=0 );
+  background-image: linear-gradient(top, #ffffff 85%,#eeeeee 99%);
+  border: 1px solid #aaa;
+  margin: 0;
+  padding: 0;
+  cursor: text;
+  overflow: hidden;
+  height: auto !important;
+  height: 1%;
+  position: relative;
+  min-height: 27px;
+}
+.pretty_container .pretty-choices li {
+  float: left;
+  list-style: none;
+}
+.pretty_container .pretty-choices .category-choice {
+  -webkit-border-radius: 3px;
+  -moz-border-radius   : 3px;
+  border-radius        : 3px;
+  -moz-background-clip   : padding;
+  -webkit-background-clip: padding-box;
+  background-clip        : padding-box;
+  background-color: #e4e4e4;
+  background-image: -webkit-gradient(linear, left bottom, left top, color-stop(0, #e4e4e4), color-stop(0.7, #eeeeee));
+  background-image: -webkit-linear-gradient(center bottom, #e4e4e4 0%, #eeeeee 70%);
+  background-image: -moz-linear-gradient(center bottom, #e4e4e4 0%, #eeeeee 70%);
+  background-image: -o-linear-gradient(bottom, #e4e4e4 0%, #eeeeee 70%);
+  background-image: -ms-linear-gradient(top, #e4e4e4 0%,#eeeeee 70%);
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e4e4e4', endColorstr='#eeeeee',GradientType=0 );
+  background-image: linear-gradient(top, #e4e4e4 0%,#eeeeee 70%);
+  color: #333;
+  border: 1px solid #b4b4b4;
+  line-height: 13px;
+  padding: 3px 19px 3px 6px;
+  margin: 3px 0 3px 5px;
+  position: relative;
+}
+.pretty_container .pretty-choices .category-choice span {
+  cursor: default;
+}
+.pretty_container .pretty-choices .category-choice-focus {
+  background: #d4d4d4;
+}
+.pretty_container .pretty-choices .category-choice .category-choice-close {
+  display: block;
+  position: absolute;
+  right: 5px;
+  top: 6px;
+  width: 8px;
+  height: 9px;
+  font-size: 1px;
+  background: url(images/delete.png) right top no-repeat;
+}
+.pretty_container .pretty-choices .category-choice .category-choice-close:hover {
+  background-position: right -9px;
+}
+.pretty_container .pretty-choices .category-choice-focus .category-choice-close {
+  background-position: right -9px;
+}
+/*##########################################################*/
 span.fullName {
     display: none;
 }
@@ -165,12 +243,11 @@ span.fullName {
 }
 .audiocontainer {
     width: 482px;
-    height: 380px;
+    max-height: 380px;
     overflow: auto;
 }
 .audiocontainer table {
     width: 100%;
-    height: 100%;
 }
 .audiocontainer table .odd {
     background-color: white;
@@ -192,9 +269,6 @@ span.fullName {
 }
 #editcontentspan input[type=text] {
     padding:5px 4px;
-}
-#editcategoriestreeview .ygtvitem {
-    padding:0 4px;
 }
 #kalturahtmlcontrib {
     width:659px !important;
@@ -274,6 +348,11 @@ span.fullName {
 }
 .kalhidden,
 .kalhidden * {
+    display: none;
+    width : 0px;
+    height : 0px;
+}
+.editentry .kalhidden {
     display: none;
     width : 0px;
     height : 0px;

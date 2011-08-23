@@ -121,9 +121,11 @@ function editInterface($edit) {
     $strs->thumbnail = get_string('thumbnail', 'local_kaltura');
 
     $categories = array();
+    $categories_flat = array();
     $depth      = array();
     if (!empty($edit->categorylist)) {
         foreach ($edit->categorylist['categories']->objects as $index => $category) {
+            $categories_flat[$category->id] = $category;
             if (empty($depth[$category->depth])) {
                 $depth[$category->depth] = array();
             }
@@ -203,7 +205,7 @@ CATEGORY;
     </div>
 EDIT;
 
-    $editdata = array('categorylist' => $categories);
+    $editdata = array('categorylist' => $categories, 'categorylist_flat' => $categories_flat);
 
     return array($editstr, $editdata, $strs);
 }

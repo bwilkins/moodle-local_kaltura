@@ -111,11 +111,13 @@ function addEntryComplete(entry) {
                     if (!(this.hasClass('kalhidden'))) {
                         this.addClass('kalhidden');
                     }
+                    return this;
                 },
                 show: function() {
                     if (this.hasClass('kalhidden')) {
                         this.removeClass('kalhidden');
                     }
+                    return this;
                 },
             });
 
@@ -426,23 +428,35 @@ function addEntryComplete(entry) {
                                 idlist          = Y.one('#editcategoriesids'),
                                 categoriestext  = textbox.get('value'),
                                 categoriesids   = idlist.get('value'),
-                                sep             = '';
+                                textsep         = ',',
+                                idssep          = ',';
 
-                            if (categoriestext != '') {
-                                sep = ', ';
+                            if (categoriesids && categoriesids.indexOf(e.node.data.catId) > -1) {
+                                return;
                             }
-                            if (categoriesids != '') {
-                                sep = ',';
-                                if (categoriesids.indexOf(e.node.data.catId) > -1) {
-                                    return;
-                                }
+
+                            var names = categoriestext.split(',');
+                            var ids = categoriesids.split(',');
+                            if (names[0] == '') {
+                                names.shift();
                             }
-                            categoriestext += sep + e.node.data.catFullName;
-                            categoriesids  += sep + e.node.data.catId;
-                            textbox.set('value', categoriestext);
-                            idlist.set('value', categoriesids);
+                            if (ids[0] == '') {
+                                ids.shift();
+                            }
+                            names.push(e.node.data.catFullName);
+                            ids.push(e.node.data.catId);
+                            textbox.set('value', names.toString());
+                            idlist.set('value', ids.toString());
+
+                            if ($this.prettify_categories) {
+                                $this.prettifyCategoriesAdd(e.node.data.catFullName, e.node.data.catId);
+                            }
                         });
                         $this.tree.render();
+                    }
+
+                    if (!Y.UA.ie || Y.UA.ie > 7.0) {
+                        $this.prettifyCategories();
                     }
 
                     Y.one('#editupdate').on('click', function (e) {
@@ -491,6 +505,66 @@ function addEntryComplete(entry) {
                         }]);
                         $this.domnode.hide();
                     });
+                },
+                prettifyCategories: function () {
+                    var $this = window.kalturaWiz;
+                    if (Y.one('#editcategoriestext')) {
+                        var container;
+                        container = Y.Node.create('<div />').setAttrs({
+                            id: 'editcategoriestext_pretty',
+                        });
+                        container.set('innerHTML', '<ul class="pretty-choices"></ul>');
+                        Y.one('#editcategoriestext').set('type', 'hidden').set('disabled', false).insert(container, 'after');
+                        Y.one('#editcategoriestext_pretty').addClass('pretty_container');
+                        $this.prettify_categories = true;
+                    }
+                },
+                populatePrettyCategories: function () {
+                    var $this = window.kalturaWiz;
+                    var ids = Y.one('#editcategoriesids').get('value').split(',');
+                    for (var i = 0; i < ids.length; i++) {
+                        $this.prettifyCategoriesAdd($this.interfaceNodes.editdata.categorylist_flat[ids[i]].fullName, ids[i]);
+                    }
+                },
+                prettifyCategoriesAdd: function (name, id) {
+                    var $this = window.kalturaWiz;
+                    var html, container;
+                    container = Y.one('#editcategoriestext_pretty .pretty-choices');
+                    container.append('<li class="category-choice" id="category-choice-' + id + '"><span>' + name + '</span><a href="javascript:void(0)" class="category-choice-close"></a></li>');
+                    Y.one('#category-choice-' + id + ' a.category-choice-close').on('click', function (evt) {
+                        evt.preventDefault();
+                        $this.removeCategory(name, id);
+                        Y.one('#category-choice-'+id).remove(true);
+                    });
+                },
+                removeCategory: function (name, id) {
+                    var $this = window.kalturaWiz;
+                    var categorytext = Y.one('#editcategoriestext');
+                    var categoryids  = Y.one('#editcategoriesids');
+
+                    var cattext = categorytext.get('value');
+                    var catids  = categoryids.get('value');
+
+                    var textsep = ',';
+                    var idsep   = ',';
+
+                    var names = cattext.split(textsep);
+                    var ids = catids.split(idsep);
+
+                    for (var i = 0; i < ids.length; i++) {
+                        if (ids[i] == id) {
+                            ids.splice(i,1);
+                        }
+                    }
+
+                    for (var i = 0; i < names.length; i++) {
+                        if (names[i] == name) {
+                            names.splice(i,1);
+                        }
+                    }
+
+                    categorytext.set('value', names.join(textsep));
+                    categoryids.set('value', ids.join(idsep));
                 },
                 _destroyInterface: function () {
                     $this = window.kalturaWiz;
@@ -561,6 +635,7 @@ function addEntryComplete(entry) {
                     if (ob.response.entry.description) {
                         Y.one('#editdescription').set('disabled', 1);
                     }
+                    $this.populatePrettyCategories();
 
                     Y.one('#editupdate').set('disabled', false);
                 },
