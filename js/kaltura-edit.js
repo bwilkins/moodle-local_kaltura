@@ -118,7 +118,7 @@ function addEntryComplete(entry) {
                         this.removeClass('kalhidden');
                     }
                     return this;
-                },
+                }
             });
 
             load_scaffold(load_scaffold);
@@ -139,7 +139,8 @@ function addEntryComplete(entry) {
 
                 },
                 _buildRootInterface: function () {
-                    if (window.kalturaWiz !== undefined) {
+                    var $this;
+                    if (window.kalturaWiz != undefined) {
                         $this = window.kalturaWiz;
                     }
                     else {
@@ -243,13 +244,16 @@ function addEntryComplete(entry) {
                     /* We're overlaying these flash objects, so let's switch them when events occur. */
                     $this.renderables.toptabs.on('selectionChange', function(e) {
                         /* location.href will occasionally contain a pesky # on the end already */
-                        var href = location.origin + location.pathname + location.search;
-                        var tab = e.newVal._parentNode.one('[tabindex=0]');
-                        if (tab.get('href') != href + '#videotab') {
+                        var href = location.protocol + '//' + location.host + location.pathname + location.search;
+
+                        var tab = e.newVal._parentNode.one('.yui3-tab-focused a');
+                        var tabhref = tab.get('href');
+                        if (tabhref != href + '#videotab') {
                             Y.one('#videooverlay').hide();
 
                             var subtab = Y.one('#audiotab .yui3-tab-selected a');
-                            if (subtab.get('href') != href + '#uploadaudiotab') {
+                            var subtabhref = subtab.get('href');
+                            if (subtabhref != href + '#uploadaudiotab') {
                                 Y.one('#audiooverlay').hide();
                             }
                             else {
@@ -260,7 +264,8 @@ function addEntryComplete(entry) {
                             Y.one('#audiooverlay').hide();
 
                             var subtab = Y.one('#videotab .yui3-tab-selected a');
-                            if (subtab.get('href') != href + '#uploadvideotab') {
+                            var subtabhref = subtab.get('href');
+                            if (subtabhref != href + '#uploadvideotab') {
                                 Y.one('#videooverlay').hide();
                             }
                             else {
@@ -272,10 +277,11 @@ function addEntryComplete(entry) {
                         Y.one('#audiooverlay').hide();
 
                         /* location.href will occasionally contain a pesky # on the end already */
-                        var href = location.origin + location.pathname + location.search;
+                        var href = location.protocol + '//' + location.host + location.pathname + location.search;
 
-                        var tab = e.newVal._parentNode.one('[tabindex=0]');
-                        if (tab.get('href') != href + '#uploadvideotab') {
+                        var tab = e.newVal._parentNode.one('.yui3-tab-focused a');
+                        var tabhref = tab.get('href');
+                        if (tabhref != href + '#uploadvideotab') {
                             Y.one('#videooverlay').hide();
                         }
                         else {
@@ -286,10 +292,11 @@ function addEntryComplete(entry) {
                         Y.one('#videooverlay').hide();
 
                         /* location.href will occasionally contain a pesky # on the end already */
-                        var href = location.origin + location.pathname + location.search;
+                        var href = location.protocol + '//' + location.host + location.pathname + location.search;
 
-                        var tab = e.newVal._parentNode.one('[tabindex=0]');
-                        if (tab.get('href') != href + '#uploadaudiotab') {
+                        var tab = e.newVal._parentNode.one('.yui3-tab-focused a');
+                        var tabhref = tab.get('href');
+                        if (tabhref != href + '#uploadaudiotab') {
                             Y.one('#audiooverlay').hide();
                         }
                         else {
@@ -455,9 +462,7 @@ function addEntryComplete(entry) {
                         $this.tree.render();
                     }
 
-                    if (!Y.UA.ie || Y.UA.ie > 7.0) {
                         $this.prettifyCategories();
-                    }
 
                     Y.one('#editupdate').on('click', function (e) {
                         var id, action, mediatype, callback;
@@ -511,7 +516,7 @@ function addEntryComplete(entry) {
                     if (Y.one('#editcategoriestext')) {
                         var container;
                         container = Y.Node.create('<div />').setAttrs({
-                            id: 'editcategoriestext_pretty',
+                            id: 'editcategoriestext_pretty'
                         });
                         container.set('innerHTML', '<ul class="pretty-choices"></ul>');
                         Y.one('#editcategoriestext').set('type', 'hidden').set('disabled', false).insert(container, 'after');
@@ -521,21 +526,29 @@ function addEntryComplete(entry) {
                 },
                 populatePrettyCategories: function () {
                     var $this = window.kalturaWiz;
-                    var ids = Y.one('#editcategoriesids').get('value').split(',');
-                    for (var i = 0; i < ids.length; i++) {
-                        $this.prettifyCategoriesAdd($this.interfaceNodes.editdata.categorylist_flat[ids[i]].fullName, ids[i]);
+                    if ($this.prettify_categories) {
+                        var idstext = Y.one('#editcategoriesids').get('value');
+                        if (idstext == "" || idstext == null) {
+                            return;
+                        }
+                        var ids = idstext.split(',');
+                        for (var i = 0; i < ids.length; i++) {
+                            $this.prettifyCategoriesAdd($this.interfaceNodes.editdata.categorylist_flat[ids[i]].fullName, ids[i]);
+                        }
                     }
                 },
                 prettifyCategoriesAdd: function (name, id) {
                     var $this = window.kalturaWiz;
-                    var html, container;
-                    container = Y.one('#editcategoriestext_pretty .pretty-choices');
-                    container.append('<li class="category-choice" id="category-choice-' + id + '"><span>' + name + '</span><a href="javascript:void(0)" class="category-choice-close"></a></li>');
-                    Y.one('#category-choice-' + id + ' a.category-choice-close').on('click', function (evt) {
-                        evt.preventDefault();
-                        $this.removeCategory(name, id);
-                        Y.one('#category-choice-'+id).remove(true);
-                    });
+                    if ($this.prettify_categories) {
+                        var html, container;
+                        container = Y.one('#editcategoriestext_pretty .pretty-choices');
+                        container.append('<li class="category-choice" id="category-choice-' + id + '"><span>' + name + '</span><a href="javascript:void(0)" class="category-choice-close"></a></li>');
+                        Y.one('#category-choice-' + id + ' a.category-choice-close').on('click', function (evt) {
+                            evt.preventDefault();
+                            $this.removeCategory(name, id);
+                            Y.one('#category-choice-'+id).remove(true);
+                        });
+                    }
                 },
                 removeCategory: function (name, id) {
                     var $this = window.kalturaWiz;
@@ -572,7 +585,12 @@ function addEntryComplete(entry) {
                     $this.rootRendered = false;
                     $this.domnode.setStyles({display: 'none'});
                     $this.domnode.remove(true);
-                    delete(window.kalturaWiz);
+                    try {
+                        delete(window.kalturaWiz);
+                    }
+                    catch (ex) {
+                        window.kalturaWiz = null;
+                    }
                 },
                 _swfLoadCallback: function (ob) {
                     fixedAttributes = {
@@ -601,6 +619,7 @@ function addEntryComplete(entry) {
                     this._swfLoadCallback(ob);
                 },
                 _populateEditCallback: function (ob) {
+                    var $this = window.kalturaWiz;
                     try {
                         var id = ob.response.entry.id;
                     }

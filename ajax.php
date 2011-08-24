@@ -281,12 +281,12 @@ function handleAction($action, $params=array()) {
             $config  = $client->getConfig();
 
             $entryid = $params['token'];
-            $entrydata = json_decode($params['entrydata']);
+            $entrydata = (object) json_decode($params['entrydata']);
 
             $entry                = new KalturaMediaEntry();
             $entry->name          = $entrydata->title;
-            $entry->description   = $entrydata->description;
-            $entry->tags          = $entrydata->tags;
+            $entry->description   = (!empty($entrydata->description)) ? $entrydata->description : ' '; //Urgh. if description is empty, we get an "Invalid KS" error
+            $entry->tags          = (!empty($entrydata->tags)) ? $entrydata->tags : null;
             if ($entrydata->categories) {
                 $entry->categoriesIds = $entrydata->categories;
             }
