@@ -58,6 +58,12 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
     $settings->add(new admin_setting_configtext('local_kaltura/kupload_audio',
         get_string('kuploadaudio', 'local_kaltura'), null, '4971641', PARAM_TEXT, 8));
 
+    $settings->add(new admin_setting_configtext('local_kaltura/upload_video_maxsize',
+        get_string('uploadvideomaxsize', 'local_kaltura'), null, '200', PARAM_TEXT, 8));
+
+    $settings->add(new admin_setting_configtext('local_kaltura/upload_audio_maxsize',
+        get_string('uploadaudiomaxsize', 'local_kaltura'), null, '200', PARAM_TEXT, 8));
+
     $settings->add(new admin_setting_configtext('local_kaltura/student_upload_category',
         get_string('studentcategory', 'local_kaltura'), get_string('studentcategory-explain', 'local_kaltura'), '', PARAM_TEXT));
 

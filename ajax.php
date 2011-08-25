@@ -46,10 +46,11 @@ foreach ($actions as $index => $action) {
 
 function handleAction($action, $params=array()) {
     global $USER, $CFG, $DB, $_SESSION;
+    $localconfig = get_config('local_kaltura');
     switch ($action) {
         case 'playerurl':
-            $partnerId  = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'partner_id'));
-            $serviceUrl = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'server_uri'));
+            $partnerId  = $localconfig->partner_id;
+            $serviceUrl = $localconfig->server_uri;
             $entry = null;
             if (!empty($params['id'])) {
                 $cm = get_coursemodule_from_id('kalturavideo', $params['id'], 0, false, MUST_EXIST);
@@ -114,7 +115,7 @@ function handleAction($action, $params=array()) {
 
         case 'videolistprivate':
             list($client, $filter, $pager) = buildVideoListFilter($params);
-            $identifier = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'identifier'));
+            $identifier = $localconfig->identifier;
 
             $filter->userIdEqual = $USER->{$identifier};
 
@@ -139,7 +140,7 @@ function handleAction($action, $params=array()) {
 
         case 'audiolistprivate':
             list($client, $filter) = buildAudioListFilter($params);
-            $identifier = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'identifier'));
+            $identifier = $localconfig->identifier;
 
             $filter->userIdEqual = $USER->{$identifier};
 
@@ -201,23 +202,25 @@ function handleAction($action, $params=array()) {
             break;
 
         case 'videouploadurl':
-            $identifier = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'identifier'));
-            $ui_conf_id = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'kupload_video'));
+            $identifier = $localconfig->identifier;
+            $ui_conf_id = $localconfig->kupload_video;
+            $vidmaxsize = $localconfig->upload_video_maxsize;
             $client = kalturaClientSession();
             $config = $client->getConfig();
             $base   = $CFG->wwwroot.'/local/kaltura/objects/';
 
-            return array('url' => $config->serviceUrl.'/kupload/ui_conf_id/'.$ui_conf_id, 'base' => $base, 'params' => array('ks' => $client->getKs(), 'uid' => $USER->{$identifier}, 'partnerId' => $config->partnerId, 'subPId' => $config->partnerId*100, 'uiConfId' => $ui_conf_id), 'wmode' => 'transparent');
+            return array('url' => $config->serviceUrl.'/kupload/ui_conf_id/'.$ui_conf_id, 'base' => $base, 'params' => array('ks' => $client->getKs(), 'uid' => $USER->{$identifier}, 'partnerId' => $config->partnerId, 'subPId' => $config->partnerId*100, 'uiConfId' => $ui_conf_id, 'maxFileSize' => $vidmaxsize, 'maxUploads' => 1), 'wmode' => 'transparent');
             break;
 
         case 'audiouploadurl':
-            $identifier = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'identifier'));
-            $ui_conf_id = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'kupload_audio'));
+            $identifier = $localconfig->identifier;
+            $ui_conf_id = $localconfig->kupload_audio;
+            $audmaxsize = $localconfig->upload_audio_maxsize;
             $client = kalturaClientSession();
             $config = $client->getConfig();
             $base   = $CFG->wwwroot.'/local/kaltura/objects/';
 
-            return array('url' => $config->serviceUrl.'/kupload/ui_conf_id/'.$ui_conf_id, 'base' => $base, 'params' => array('ks' => $client->getKs(), 'uid' => $USER->{$identifier}, 'partnerId' => $config->partnerId, 'subPId' => $config->partnerId*100, 'uiConfId' => $ui_conf_id), 'wmode' => 'transparent');
+            return array('url' => $config->serviceUrl.'/kupload/ui_conf_id/'.$ui_conf_id, 'base' => $base, 'params' => array('ks' => $client->getKs(), 'uid' => $USER->{$identifier}, 'partnerId' => $config->partnerId, 'subPId' => $config->partnerId*100, 'uiConfId' => $ui_conf_id, 'maxFileSize' => $audmaxsize, 'maxUploads' => 1), 'wmode' => 'transparent');
             break;
 
         case 'geteditdata':
@@ -253,7 +256,7 @@ function handleAction($action, $params=array()) {
             }
 
             if (!$_SESSION['kaltura_use_shared']) { //This means they're a student...
-                if($category_name = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'student_upload_category'))) {
+                if($category_name = $localconfig->student_upload_category) {
                     $res = handleAction('getcategorydetails', array('category' => $category_name));
                     if (!empty($entry->categoriesIds)) {
                         $entry->categoriesIds .= ',' . $res['category']->id;
@@ -292,7 +295,7 @@ function handleAction($action, $params=array()) {
             }
 
             if (!$_SESSION['kaltura_use_shared']) { //This means they're a student...
-                if($category_name = $DB->get_field('config_plugins','value',array('plugin'=>'local_kaltura', 'name'=>'student_upload_category'))) {
+                if($category_name = $localconfig->student_upload_category) {
                     $res = handleAction('getcategorydetails', array('category' => $category_name));
                     if (!empty($entry->categoriesIds)) {
                         $entry->categoriesIds .= ',' . $res['category']->id;
