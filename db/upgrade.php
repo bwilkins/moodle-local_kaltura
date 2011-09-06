@@ -40,7 +40,7 @@ function xmldb_local_kaltura_upgrade($oldversion) {
 
         if (empty($identifier)) {
             //Not sure if identifier is set by this time, so assume username if not.
-            $identifier = 'username';
+            $identifier = 'idnumber';
         }
 
         if (!empty($partnerId) && !empty($secret)) {
