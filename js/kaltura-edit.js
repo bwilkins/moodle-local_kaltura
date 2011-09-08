@@ -929,6 +929,7 @@ function addEntryComplete(entry) {
                         $this.uploadtoken = args[0].token;
                         $this.uploadtype  = 'audio';
                         Y.one('#editupdate').set('disabled', false);
+                        Y.one('#contribkalturathumb').remove();
                     },
                     selectHandler: function (){
                         var $this = window.kalturaWiz;
@@ -956,6 +957,7 @@ function addEntryComplete(entry) {
                         $this.uploadtoken = args[0].token;
                         $this.uploadtype  = 'video';
                         Y.one('#editupdate').set('disabled', false);
+                        Y.one('#contribkalturathumb').remove();
                     },
                     selectHandler: function (){
                         var $this = window.kalturaWiz;
