@@ -686,8 +686,8 @@ function addEntryComplete(entry) {
                     var $this      = window.kalturaWiz,
                         strs       = $this.interfaceNodes.strings,
                         page       = ob.response.page,
-                        pagebhref  = 'href="#"',
-                        pagefhref  = 'href="#"';
+                        pagebhref  = '<a href="#" class="pageb">' + strs.previous + '</a> ',
+                        pagefhref  = ' <a href="#" class="pagef">' + strs.next + '</a>';
 
                     if (ob.response) {
                         Y.one(ob.passthrough.target+' .controls').setContent('');
@@ -700,8 +700,10 @@ function addEntryComplete(entry) {
                     if (page.current == 1) {
                         pagebhref = '';
                     }
-                    var node = Y.Node.create('<a ' + pagebhref + ' class="pageb">' + strs.previous + '</a>' + strs.page + ' ' + ob.response.page.current + ' of ' + ob.response.page.count + '<a ' + pagefhref + ' class="pagef">' + strs.next + '</a>');
-                    Y.one(ob.passthrough.target+' .controls').appendChild(node);
+                    if (pagebhref || pagefhref) {
+                        var node = Y.Node.create(pagebhref + strs.page + ' ' + ob.response.page.current + ' of ' + ob.response.page.count + pagefhref);
+                        Y.one(ob.passthrough.target+' .controls').appendChild(node);
+                    }
 
                     for (var i = 0; i < ob.response.count; i++) {
                         var n = ob.response.objects[i];
@@ -710,11 +712,7 @@ function addEntryComplete(entry) {
                                 Y.Node.create(
                                     '<span class="thumb">'
                                         +'<a href="#" onClick="contribWiz.fn.selectedEntry({entryId: \'' + n.id + '\', mediatype: \'' + ob.passthrough.type + '\', upload: false});return false;" class="kalturavideo" id="' + n.id + '">'
-                                            + (
-                                                ob.passthrough.type === 'audio' ?
-                                                    '<span><div class="kalthumb">' + n.name + '</div></span>' :
-                                                    '<img src="' + n.thumbnailUrl + '" type="image/jpeg" class="kalthumb" alt="' + n.name + '" title="' + n.name + '"/>'
-                                                )
+                                            +'<img src="' + n.thumbnailUrl + '" type="image/jpeg" class="kalthumb" alt="' + n.name + '" title="' + n.name + '"/>'
                                         +'</a>'
                                     +'</span>'
                                 )
@@ -728,7 +726,7 @@ function addEntryComplete(entry) {
                         type     : ob.passthrough.type,
                         page     : ob.response.page.current,
                         pagecount: ob.response.page.count,
-                        callback : videoMediaCallback
+                        callback : $this.videoMediaCallback
                     });
                 },
                 audioMediaCallback: function (ob) {
@@ -758,66 +756,70 @@ function addEntryComplete(entry) {
                     back        = Y.one(ob.target+' .pageb'),
                     forward     = Y.one(ob.target+' .pagef');
 
-                    if (ob.page <= 1) {
-                        back.setAttribute('disabled', true);
-                    }
-                    else {
-                        back.setAttribute('disabled', false);
-                        back.on(
-                            {
-                                click: function (e) {
-                                    e.preventDefault();
+                    if (back) {
+                        if (ob.page <= 1) {
+                            back.setAttribute('disabled', true);
+                        }
+                        else {
+                            back.setAttribute('disabled', false);
+                            back.on(
+                                {
+                                    click: function (e) {
+                                        e.preventDefault();
 
-                                    $this.multiJAX([{
-                                        action: ob.action,
-                                        passthrough: {
-                                            target: ob.target,
+                                        $this.multiJAX([{
                                             action: ob.action,
-                                            type:   ob.type,
-                                            page:   ob.page-1
-                                        },
-                                        params: {
-                                            mediatype: ob.type,
-                                            page: ob.page-1
-                                        },
-                                        successCallback: ob.callback
-                                    }]);
+                                            passthrough: {
+                                                target: ob.target,
+                                                action: ob.action,
+                                                type:   ob.type,
+                                                page:   ob.page-1
+                                            },
+                                            params: {
+                                                mediatype: ob.type,
+                                                page: ob.page-1
+                                            },
+                                            successCallback: ob.callback
+                                        }]);
 
-                                    return false;
+                                        return false;
+                                    }
                                 }
-                            }
-                        );
+                            );
+                        }
                     }
 
-                    if (ob.page >= ob.pagecount) {
-                        forward.setAttribute('disabled', true);
-                    }
-                    else {
-                        forward.setAttribute('disabled', false);
-                        forward.on(
-                            {
-                                click: function (e) {
-                                    e.preventDefault();
+                    if (forward) {
+                        if (ob.page >= ob.pagecount) {
+                            forward.setAttribute('disabled', true);
+                        }
+                        else {
+                            forward.setAttribute('disabled', false);
+                            forward.on(
+                                {
+                                    click: function (e) {
+                                        e.preventDefault();
 
-                                    $this.multiJAX([{
-                                        action: ob.action,
-                                        passthrough: {
-                                            target: ob.target,
+                                        $this.multiJAX([{
                                             action: ob.action,
-                                            type:   ob.type,
-                                            page:   ob.page-1
-                                        },
-                                        params: {
-                                            mediatype: ob.type,
-                                            page: ob.page+1
-                                        },
-                                        successCallback: window.kalturaWiz._mediaListCallback
-                                    }]);
+                                            passthrough: {
+                                                target: ob.target,
+                                                action: ob.action,
+                                                type:   ob.type,
+                                                page:   ob.page-1
+                                            },
+                                            params: {
+                                                mediatype: ob.type,
+                                                page: ob.page+1
+                                            },
+                                            successCallback: ob.callback
+                                        }]);
 
-                                    return false;
+                                        return false;
+                                    }
                                 }
-                            }
-                        );
+                            );
+                        }
                     }
                 },
                 multiJAX: function (conf) {

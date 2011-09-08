@@ -39,9 +39,9 @@ function constructVideoMediaPager($data) {
     $previous = get_string('previous', 'local_kaltura');
     $page = get_string('page', 'local_kaltura');
 
-    $pagebhref = 'href="#"';
-    $pagefhref = 'href="#"';
-    if ($data['page']['current'] === $data['page']['count']) {
+    $pagebhref = '<a href="#" class="pageb">' . $previous . '</a> ';
+    $pagefhref = ' <a href="#" class="pagef">' . $next . '</a>';
+    if ($data['page']['current'] == $data['page']['count']) {
         $pagefhref = '';
     }
     if ($data['page']['current'] == 1) {
@@ -49,7 +49,7 @@ function constructVideoMediaPager($data) {
     }
     $listhtml = '<div class="videocontainer">';
     $controlshtml =  '<div class="controls">'
-                    .'<a ' . $pagebhref . ' class="pageb">' . $previous . '</a> ' . $page . ' ' . $data['page']['current'] . ' of ' . $data['page']['count'] . ' <a ' . $pagefhref . ' class="pagef">' . $next . '</a>'
+                    . ((!empty($pagebhref) || !empty($pagefhref)) ? $pagebhref . $page . ' ' . $data['page']['current'] . ' of ' . $data['page']['count'] . $pagefhref : '')
                     .'</div>';
 
     foreach ($data['objects'] as $entry) {
