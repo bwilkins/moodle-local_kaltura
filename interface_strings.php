@@ -214,11 +214,11 @@ function selectInterface($select, $enable_shared) {
     $show = new stdClass;
 
     $show->video = true; //To be configured later
-    $show->videolistprivate = !empty($select->videolistprivate);
+    $show->videolistprivate = !empty($select->videolistprivate) && !empty($select->videolistprivate['objects']);
     $show->videolistpublic  = $enable_shared && !empty($select->videolistpublic);
 
     $show->audio = true; //To be configured later
-    $show->audiolistprivate = !empty($select->audiolistprivate);
+    $show->audiolistprivate = !empty($select->audiolistprivate) && !empty($select->audiolistprivate['objects']);
     $show->audiolistpublic  = $enable_shared && !empty($select->audiolistpublic);
 
     $strs = new stdClass;
