@@ -306,16 +306,9 @@ function handleAction($action, $params=array()) {
                 }
             }
 
-            if (empty($entry->description)) {
-                return array(
-                    'entry' => $client->media->update($entryid, $entry),
-                );
-            }
-            else {
-                return array(
-                    'entry' => $client->media->addFromEntry($entryid, $entry),
-                );
-            }
+            return array(
+                'entry' => $client->media->update($entryid, $entry),
+            );
 
             break;
 
