@@ -46,11 +46,8 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
 
     $settings->add(new admin_setting_heading('pluginsettings', get_string('pluginsettings', 'local_kaltura') , ''));
 
-    $settings->add(new admin_setting_configtext('local_kaltura/player_regular_dark',
-        get_string('playerregulardark', 'local_kaltura'), null, '1466342', PARAM_TEXT, 8));
-
-    $settings->add(new admin_setting_configtext('local_kaltura/player_regular_light',
-        get_string('playerregularlight', 'local_kaltura'), null, '1466432', PARAM_TEXT, 8));
+    $settings->add(new admin_setting_configtext('local_kaltura/player_selections',
+        get_string('playerselections', 'local_kaltura'), null, '1466342', PARAM_TEXT));
 
     $settings->add(new admin_setting_configtext('local_kaltura/kupload_video',
         get_string('kuploadvideo', 'local_kaltura'), null, '4436601', PARAM_TEXT, 8));

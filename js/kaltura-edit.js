@@ -28,7 +28,18 @@ YUI().use('node', 'io', 'json-parse', 'event', function (Y) {
         obj = {};
         obj.playerselector = '.kalturaPlayerEdit';
         obj.entryid = Y.one('input[name=kalturavideo]').get('value');
+        obj.playerid = Y.one('select[name=kaltura_player]').get('value');
         initialisevideo(obj);
+
+        Y.one('select[name=kaltura_player]').on('change',
+            function (e) {
+                obj = {};
+                obj.playerselector = '.kalturaPlayerEdit';
+                obj.entryid = Y.one('input[name=kalturavideo]').get('value');
+                obj.playerid = Y.one('select[name=kaltura_player]').get('value');
+                initialisevideo(obj);
+            }
+        )
     });
 });
 
@@ -896,7 +907,8 @@ function addEntryComplete(entry) {
                 },
                 _useEntry: function (id) {
                     Y.one('input[name=kalturavideo]').set('value', id);
-                    initialisevideo({playerselector: '.kalturaPlayerEdit', entryid: id});
+                    var playerid = Y.one('select[name=kaltura_player]').get('value');
+                    initialisevideo({playerselector: '.kalturaPlayerEdit', entryid: id, playerid: playerid});
                     window.kalturaWiz._destroyInterface();
                 },
                 _addEntryComplete: function (ob) {

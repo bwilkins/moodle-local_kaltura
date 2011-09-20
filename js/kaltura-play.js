@@ -45,6 +45,9 @@ function initialisevideo(obj) {
         else {
             return false;
         }
+        if (obj.playerid != undefined && obj.playerid != '') {
+            datastr += '&params[0][playerid]=' + obj.playerid;
+        }
 
         Y.io(M.cfg.wwwroot+'/local/kaltura/ajax.php',
             {
