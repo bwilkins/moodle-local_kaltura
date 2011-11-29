@@ -230,11 +230,12 @@ function addEntryComplete(entry) {
 
                     /* YUIfy DOM sections */
                     $this.renderables.toptabs     = new Y.TabView({srcNode:'#selectionInterface'});
+                    $this.renderables.toptabs.render();
+
                     $this.renderables.videotabs   = new Y.TabView({srcNode:'#videotabview'});
                     $this.renderables.audiotabs   = new Y.TabView({srcNode:'#audiotabview'});
 
                     /* Render YUI parts */
-                    $this.renderables.toptabs.render();
                     $this.renderables.videotabs.render();
                     $this.renderables.audiotabs.render();
 
