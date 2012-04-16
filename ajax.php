@@ -28,19 +28,15 @@ require_once("lib.php");
 require_once('client/KalturaClient.php');
 require_once('interface_strings.php');
 
-$actions       = optional_param('actions', '', PARAM_CLEAN);
-$params        = optional_param('params', null, PARAM_CLEAN);
+debugging(print_r($_REQUEST, true));
+
+$actions       = optional_param_array('actions', '', PARAM_CLEAN);
 
 require_login();
 
 $returndata = array();
 foreach ($actions as $index => $action) {
-    if (isset($params[$index])) {
-        $p = $params[$index];
-    }
-    else {
-        $p = array();
-    }
+    $p = optional_param_array("params[$index]", array(), PARAM_CLEAN);
     $returndata[$index] = handleAction($action, $p);
 }
 
